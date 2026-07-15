@@ -7,9 +7,9 @@ def get_client():
     key = st.secrets["SUPABASE_KEY"]
     return create_client(url, key)
 
-def get_tasks(bucket):
+def get_tasks(bucket, day_type):
     client = get_client()
-    result = client.table("tasks").select("*").eq("bucket", bucket).execute()
+    result = client.table("tasks").select("*").eq("bucket", bucket).eq("day_type", day_type).execute()
     return result.data
 
 def add_task(bucket, day_type, text):
@@ -31,3 +31,8 @@ def get_wins():
     client = get_client()
     result = client.table("wins").select("*").order("created_at", desc=True).execute()
     return result.data
+
+def toggle_blocked(task_id, is_blocked):
+    client = get_client()
+    client.table("tasks").update({"is_blocked": is_blocked}).eq("id", task_id).execute()
+    
